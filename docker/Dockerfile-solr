@@ -1,0 +1,18 @@
+# Specify Solr version
+FROM solr:8.6.3
+
+# Download and unzip the Autopsy Solr configurations
+RUN cd /tmp && \
+    curl -L https://sourceforge.net/projects/autopsy/files/CollaborativeServices/Solr/SOLR_8.6.3_AutopsyService.zip/download \
+    --output SOLR_8.6.3_AutopsyService.zip && \
+    unzip SOLR_8.6.3_AutopsyService.zip
+
+# Start Solr in the background and wait for it to be ready, then create the core
+RUN solr start && \
+    sleep 10 && \
+    solr create_core -c autopsy \
+    -d /tmp/SOLR_8.6.3_AutopsyService/solr-8.6.3/server/solr/configsets/AutopsyConfig/conf && \
+    solr stop
+
+# Expose Solr port
+EXPOSE 8983
